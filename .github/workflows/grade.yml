@@ -1,0 +1,81 @@
+name: AutoGrading
+
+on:
+ pull_request:
+   branches: [main]
+ push:
+   branches: [main]
+
+permissions:
+ contents: read
+
+jobs:
+ test:
+   env:
+     MIX_ENV: test
+   services:
+     db:
+       image: postgres:12
+       ports: ['5432:5432']
+       env:
+         POSTGRES_PASSWORD: postgres
+       options: >-
+         --health-cmd pg_isready
+         --health-interval 10s
+         --health-timeout 5s
+         --health-retries 5
+
+   runs-on: ubuntu-latest
+   name: Grade Challenge Solution
+   strategy:
+     matrix:
+       otp: ['26.2.5']
+       elixir: ['1.17.1']
+   
+   steps:
+   - uses: erlef/setup-beam@v1
+     with:
+       otp-version: ${{matrix.otp}}
+       elixir-version: ${{matrix.elixir}}
+
+   - uses: actions/checkout@v3
+
+   - uses: actions/cache@v3
+     id: cache-deps
+     with:
+       path: deps
+       key: ${{ runner.os }}-mix-deps-${{ hashFiles('**/mix.lock') }}
+
+   - uses: actions/cache@v3
+     id: cache-build
+     with:
+       path: _build
+       key: ${{ runner.os }}-mix-build-${{ hashFiles('**/mix.lock') }}
+
+   - run: mix deps.get
+   - run: mix compile --warnings-as-errors
+   - run: mix format --check-formatted
+
+   - name: Grade Tests
+     id: grade
+     run: |
+       TEST_OUTPUT=$(mix test)
+       TOTAL_TESTS=$(echo "$TEST_OUTPUT" | grep -o '[0-9]* tests' | awk '{print $1}')
+       PASSED_TESTS=$(echo "$TEST_OUTPUT" | grep -o '[0-9]* test' | head -n 1 | awk '{print $1}')
+       GRADE=$((PASSED_TESTS * 100 / TOTAL_TESTS))
+       echo "grade=$GRADE" >> $GITHUB_OUTPUT
+       echo "::notice::Grade: $GRADE% ($PASSED_TESTS/$TOTAL_TESTS tests passed)"
+
+   - uses: peter-evans/create-or-update-comment@v1
+     if: github.event_name == 'pull_request'
+     with:
+       issue-number: ${{ github.event.pull_request.number }}
+       body: |
+         ## Challenge Results
+         Score: ${{ steps.grade.outputs.grade }}%
+         
+         Required to pass: 100%
+
+   - name: Check Grade
+     if: steps.grade.outputs.grade != '100'
+     run: exit 1
