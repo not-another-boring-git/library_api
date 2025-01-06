@@ -1,4 +1,4 @@
-name: AutoGrading
+name: Grade
 
 on:
  pull_request:
@@ -53,26 +53,35 @@ jobs:
        key: ${{ runner.os }}-mix-build-${{ hashFiles('**/mix.lock') }}
 
    - run: mix deps.get
+   - run: mix compile --warnings-as-errors
+   - run: mix format --check-formatted
 
    - name: Grade Tests
      id: grade
      run: |
        TEST_OUTPUT=$(mix test)
-       TOTAL_TESTS=$(echo "$TEST_OUTPUT" | grep -o '[0-9]* tests' | awk '{print $1}')
-       PASSED_TESTS=$(echo "$TEST_OUTPUT" | grep -o '[0-9]* test' | head -n 1 | awk '{print $1}')
-       GRADE=$((PASSED_TESTS * 100 / TOTAL_TESTS))
-       echo "grade=$GRADE" >> $GITHUB_OUTPUT
-       echo "::notice::Grade: $GRADE% ($PASSED_TESTS/$TOTAL_TESTS tests passed)"
 
-   - uses: peter-evans/create-or-update-comment@v1
-     if: github.event_name == 'pull_request'
-     with:
-       issue-number: ${{ github.event.pull_request.number }}
-       body: |
-         ## Challenge Results
-         Score: ${{ steps.grade.outputs.grade }}%
-         
-         Required to pass: 100%
+      if [ $? -ne 0 ]; then
+          echo "grade=0" >> $GITHUB_OUTPUT
+          echo "::error::Tests failed to run properly"
+          exit 1
+      fi
+
+      TOTAL_TESTS=$(echo "$TEST_OUTPUT" | grep -o '[0-9]* tests' | awk '{print $1}')
+      if [ -z "$TOTAL_TESTS" ] || [ "$TOTAL_TESTS" -eq 0 ]; then
+          echo "grade=0" >> $GITHUB_OUTPUT
+          echo "::error::No tests found or tests failed to parse"
+          exit 1
+      fi
+
+      PASSED_TESTS=$(echo "$TEST_OUTPUT" | grep -o '[0-9]* test' | head -n 1 | awk '{print $1}')
+      GRADE=$((PASSED_TESTS * 100 / TOTAL_TESTS))
+
+
+      echo "grade=$GRADE" >> $GITHUB_OUTPUT
+      echo "::notice::Grade: $GRADE% ($PASSED_TESTS/$TOTAL_TESTS tests passed)"
+
+
 
    - name: Check Grade
      if: steps.grade.outputs.grade != '100'
