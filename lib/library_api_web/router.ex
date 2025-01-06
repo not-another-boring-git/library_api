@@ -1,5 +1,4 @@
 defmodule LibraryApiWeb.Router do
-  alias LibraryApiWeb.BookController
   use LibraryApiWeb, :router
 
   pipeline :api do
