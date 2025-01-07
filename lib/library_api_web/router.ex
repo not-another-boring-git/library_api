@@ -11,6 +11,6 @@ defmodule LibraryApiWeb.Router do
     post "/books", BookController, :create
     get "/books/isbn/:isbn", BookController, :show
     get "/books/author/:author", BookController, :by_author
-    put "/books/:id/year/:year", BookController, :update_year
+    put "/books/:id/year", BookController, :update_year
   end
 end

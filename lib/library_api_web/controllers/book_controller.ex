@@ -1,6 +1,9 @@
 defmodule LibraryApiWeb.BookController do
   use LibraryApiWeb, :controller
+
   alias LibraryApi.Books
+
+  action_fallback LibraryApiWeb.FallbackController
 
   def create(conn, %{"book" => book_params}) do
     with {:ok, book} <- Books.create_book(book_params) do
@@ -11,7 +14,7 @@ defmodule LibraryApiWeb.BookController do
   end
 
   def show(conn, %{"isbn" => isbn}) do
-    with {:ok, book} <- Books.get_book_by_isbn(isbn) do
+    with book <- Books.get_book_by_isbn!(isbn) do
       render(conn, :show, book: book)
     end
   end

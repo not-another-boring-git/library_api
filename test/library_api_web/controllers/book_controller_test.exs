@@ -1,6 +1,8 @@
 defmodule LibraryApiWeb.BookControllerTest do
   use LibraryApiWeb.ConnCase
 
+  alias LibraryApi.Books
+
   @create_attrs %{
     title: "Dune",
     author: "Frank Herbert",
