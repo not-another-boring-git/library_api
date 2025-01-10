@@ -6,7 +6,8 @@ defmodule LibraryApiWeb do
   This can be used in your application as:
 
       use LibraryApiWeb, :controller
-      use LibraryApiWeb, :html
+      use LibraryApiWeb, :view
+      use LibraryApiWeb, :json
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -48,6 +49,23 @@ defmodule LibraryApiWeb do
     end
   end
 
+  def json do
+    quote do
+      use Phoenix.Controller,
+        formats: [:json]
+
+      import Plug.Conn
+      use Gettext, backend: LibraryApiWeb.Gettext
+    end
+  end
+
+  def view do
+    quote do
+      use Phoenix.View, root: "lib/library_api_web/templates", namespace: LibraryApiWeb
+      import Phoenix.View
+    end
+  end
+
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
@@ -64,3 +82,4 @@ defmodule LibraryApiWeb do
     apply(__MODULE__, which, [])
   end
 end
+  
