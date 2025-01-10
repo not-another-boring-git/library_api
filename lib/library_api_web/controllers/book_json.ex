@@ -1,21 +1,15 @@
 defmodule LibraryApiWeb.BookJSON do
-  alias LibraryApi.Books.Book
+  use LibraryApiWeb, :view
 
-  def index(%{books: books}) do
-    %{data: for(book <- books, do: data(book))}
-  end
-
-  def show(%{book: book}) do
-    data(book)
-  end
-
-  defp data(%Book{} = book) do
+  def render("book.json", %{book: book}) do
     %{
       id: book.id,
       title: book.title,
       author: book.author,
       year: book.year,
-      isbn: book.isbn
+      isbn: book.isbn,
+      inserted_at: book.inserted_at,
+      updated_at: book.updated_at
     }
   end
 end
