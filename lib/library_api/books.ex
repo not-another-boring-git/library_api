@@ -1,29 +1,34 @@
 defmodule LibraryApi.Books do
   alias LibraryApi.Repo
-  alias LibraryApi.Books.BookSchema
+  alias LibraryApi.Books.Book
 
-  # Create
-  def create_book(attrs) do
-    %BookSchema{}
-    |> BookSchema.changeset(attrs)
+  # Função para criar um livro
+  def create(attrs) do
+    %Book{}
+    |> Book.changeset(attrs)
     |> Repo.insert()
   end
 
-  # Read
-  def get_book(id), do: Repo.get(BookSchema, id)
-  def list_books, do: Repo.all(BookSchema)
-
-  # Update
-  def update_book(id, attrs) do
-    book = get_book(id)
-    book
-    |> BookSchema.changeset(attrs)
-    |> Repo.update()
+  # Função para listar todos os livros
+  def list do
+    Repo.all(Book)
   end
 
-  # Delete
-  def delete_book(id) do
-    book = get_book(id)
-    Repo.delete(book)
+  # Função para obter um livro pelo id
+  def get(id) do
+    Repo.get(Book, id)
+  end
+
+  # Função para atualizar um livro existente
+  def update(id, attrs) do
+    book = get(id)
+
+    case book do
+      nil -> {:error, "Book not found"}
+      _book -> 
+        book
+        |> Book.changeset(attrs)
+        |> Repo.update()
+    end
   end
 end
