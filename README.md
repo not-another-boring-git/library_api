@@ -2,11 +2,6 @@
 
 Create a Phoenix API project for managing a library catalog.
 
-## Requirements
-1. Books schema with title (string), author (string), year (integer), isbn (string)
-2. Context and controller with basic CRUD operations
-3. Tests covering CRUD functionality
-
 ## Challenge Tasks
 Fill in these four functions:
 1. Create book with validations (title & author required)
