@@ -10,7 +10,7 @@ Fill in these four functions:
 4. Update book's year
 
 ## Submission
-1. Fork thiw repository
+1. Fork this repository
 2. Create branch `solution`
 3. Complete challenges
 4. Open PR to our repository main branch
