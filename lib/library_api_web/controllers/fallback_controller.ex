@@ -16,11 +16,9 @@ defmodule LibraryApiWeb.FallbackController do
     |> render(:error, changeset: changeset)
   end
 
-  # This clause is an example of how to handle resources that cannot be found.
-  def call(conn, {:error, :not_found}) do
+  def call(conn, {:error, message}) when is_binary(message) do
     conn
-    |> put_status(:not_found)
-    |> put_view(json: LibraryApiWeb.ErrorJSON)
-    |> render(:"404")
+    |> put_status(:bad_request)
+    |> json(%{error: message})
   end
 end

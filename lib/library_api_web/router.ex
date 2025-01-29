@@ -12,5 +12,6 @@ defmodule LibraryApiWeb.Router do
     get "/books/isbn/:isbn", BookController, :show
     get "/books/author/:author", BookController, :by_author
     put "/books/:id/year", BookController, :update_year
+    put "/books/:id/isbn", BookController, :update_isbn
   end
 end

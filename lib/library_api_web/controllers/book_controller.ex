@@ -29,4 +29,10 @@ defmodule LibraryApiWeb.BookController do
       render(conn, :show, book: book)
     end
   end
+
+  def update_isbn(conn, %{"id" => id, "isbn" => isbn}) do
+    with {:ok, book} <- Books.update_book_isbn(id, isbn) do
+      render(conn, :show, book: book)
+    end
+  end
 end
