@@ -16,6 +16,7 @@ defmodule LibraryApi.Books.Book do
   def changeset(book, attrs) do
     book
     |> cast(attrs, [:title, :author, :year, :isbn])
-    |> validate_required([:title, :author, :year, :isbn])
+    |> validate_required([:title, :author])
+    |> unique_constraint(:isbn, message: "ISBN already exists")
   end
 end
