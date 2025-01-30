@@ -9,7 +9,6 @@ defmodule LibraryApi.Books.Book do
     field :title, :string
     field :year, :integer
     field :isbn, :string
-
   end
 
   @doc false

@@ -45,8 +45,9 @@ defmodule LibraryApi.Books do
 
   def update_book_year(id, year) do
     book = get_book!(id)
+
     book
-    |>change_book(%{year: year})
+    |> change_book(%{year: year})
     |> Repo.update()
   end
 
@@ -61,7 +62,6 @@ defmodule LibraryApi.Books do
       {:error, "Can't change ISBN of a book that already has one"}
     end
   end
-
 
   @doc """
   Creates a book.

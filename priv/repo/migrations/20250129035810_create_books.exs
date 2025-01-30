@@ -9,6 +9,7 @@ defmodule LibraryApi.Repo.Migrations.CreateBooks do
       add :year, :integer
       add :isbn, :string
     end
+
     create unique_index(:books, [:isbn])
   end
 end

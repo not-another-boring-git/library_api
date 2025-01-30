@@ -36,7 +36,13 @@ defmodule LibraryApi.BooksTest do
 
     test "update_book/2 with valid data updates the book" do
       book = book_fixture()
-      update_attrs = %{author: "some updated author", title: "some updated title", year: 43, isbn: "some updated isbn"}
+
+      update_attrs = %{
+        author: "some updated author",
+        title: "some updated title",
+        year: 43,
+        isbn: "some updated isbn"
+      }
 
       assert {:ok, %Book{} = book} = Books.update_book(book, update_attrs)
       assert book.author == "some updated author"
